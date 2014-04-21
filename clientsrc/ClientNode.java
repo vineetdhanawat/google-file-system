@@ -22,7 +22,6 @@ public class ClientNode
     public static HashMap<String,Socket> serverSocketMap = new HashMap<String,Socket>();
     public static HashMap<Socket,BufferedReader> serverReaders = new HashMap<Socket,BufferedReader>();
     public static HashMap<Socket,PrintWriter> serverWriters = new HashMap<Socket,PrintWriter>();
-    
 
 	// Total number of server nodes in the system;
 	public static int SERVERNUMNODES = 0;
@@ -33,11 +32,8 @@ public class ClientNode
 	// ID number of this node instance
 	public static int clientNodeID = 0;
 
-
-
 	public static void main(String[] args)
 	{
-
 		// User will let the node know its nodeID
 		if (args.length > 0)
 		{
@@ -53,7 +49,6 @@ public class ClientNode
 		}
 		try 
 		{
-
 			// reading config file
 			InputOutputHandler IOH = new InputOutputHandler();
 			
@@ -63,22 +58,19 @@ public class ClientNode
 			//Must Be Run In A New Thread To Avoid Thread Blocking			
 			// Sleep so that all servers/listeners can can be started
 			Thread.sleep(10000);
-			
+
 			SendConnectionThread SCT = new SendConnectionThread(clientNodeID,IOH,SERVERNUMNODES,CLIENTNUMNODES);
 			
 			// Sleep so that socket connections can be made
 			Thread.sleep(5000);
 			
 			// Starting threads for always read listeners
-		/*	for (int i=0;i<NUMNODES;i++)
+			for (int i=0;i<SERVERNUMNODES;i++)
 			{
-				if (i!=nodeID)
-				{
-					DaemonThread DT = new DaemonThread(socketMap.get(Integer.toString(i)),IOH, RA);
-					System.out.println("SocketID"+DT);
-					System.out.println("Started thread at "+nodeID+" for listening "+i);
-				}
-			}*/
+					DaemonThreadServer DTS = new DaemonThreadServer(serverSocketMap.get(Integer.toString(i)),IOH);
+					System.out.println("SocketID"+DTS);
+					System.out.println("Started thread at "+clientNodeID+" for listening server"+i);
+			}
 			
 			// Initialization Message
 			/*if (nodeID == 0)
