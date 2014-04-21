@@ -64,6 +64,8 @@ public class ServerNode
 			SERVERNUMNODES = IOH.readServerConfig();
 			CLIENTNUMNODES = IOH.readClientConfig();
 			
+			System.out.println("SERVERNUMNODES:"+SERVERNUMNODES);
+			System.out.println("CLIENTNUMNODES:"+CLIENTNUMNODES);
 			//Must Be Run In A New Thread To Avoid Thread Blocking
 			ReceiveConnectionThread RCT = new ReceiveConnectionThread(serverNodeID,IOH,SERVERNUMNODES,CLIENTNUMNODES);
 			System.out.println("Listener Started");
@@ -77,18 +79,26 @@ public class ServerNode
 			Thread.sleep(5000);
 			
 			// Starting threads for always read listeners
-		/*	for (int i=0;i<NUMNODES;i++)
+			for (int i=0;i<SERVERNUMNODES;i++)
 			{
-				if (i!=nodeID)
+				if (i!=serverNodeID)
 				{
-					DaemonThread DT = new DaemonThread(socketMap.get(Integer.toString(i)),IOH, RA);
-					System.out.println("SocketID"+DT);
-					System.out.println("Started thread at "+nodeID+" for listening "+i);
+					DaemonThreadServer DTS = new DaemonThreadServer(serverSocketMap.get(Integer.toString(i)),IOH);
+					System.out.println("SocketID"+DTS);
+					System.out.println("Started thread at "+serverNodeID+" for listening server"+i);
 				}
-			}*/
+			}
+			for (int i=0;i<CLIENTNUMNODES;i++)
+			{
+					DaemonThreadClient DTC = new DaemonThreadClient(clientSocketMap.get(Integer.toString(i)),IOH);
+					System.out.println("SocketID"+DTC);
+					System.out.println("Started thread at "+serverNodeID+" for listening client"+i);
+			}
+			
+			Thread.sleep(5000);
 			
 			// Initialization Message
-			/*if (nodeID == 0)
+			//if (serverNodeID == 0)
 			{
 				new Thread()
 				{
@@ -97,12 +107,54 @@ public class ServerNode
 						broadcast("START");
 					}
 				 }.start();
-				 RA.requestCriticalSection();
-			}*/
+			}
+
 		}
 		catch (Exception e)
 		{
 			//TODO add error handling
+		}
+	}
+	
+    /**
+	* Broadcasts a message to all writers in the outputStreams arraylist.
+	* Note this should probably never be used as RicartAgrawala is unicast
+	*/
+	public static void broadcast(String message)
+	{
+		for(int i=0; i<SERVERNUMNODES; i++)
+		{
+			if (i!=serverNodeID)
+			{
+				try
+				{
+					System.out.println("Sending "+message+" to server "+i);
+					Socket bs = serverSocketMap.get(Integer.toString(i));
+					System.out.println("socket:"+bs);
+					PrintWriter writer = serverWriters.get(bs);
+		            writer.println(message);
+	                writer.flush();
+				}
+				catch(Exception ex)
+				{
+					ex.printStackTrace();
+				}
+			}
+		}
+		for(int i=0; i<CLIENTNUMNODES; i++)
+		{
+			try
+			{
+				System.out.println("Sending "+message+" to client "+i);
+				Socket bs = clientSocketMap.get(Integer.toString(i));
+				PrintWriter writer = clientWriters.get(bs);
+	            writer.println(message);
+                writer.flush();
+			}
+			catch(Exception ex)
+			{
+				ex.printStackTrace();
+			}
 		}
 	}
 

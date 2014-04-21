@@ -35,8 +35,7 @@ public class ReceiveConnectionThread extends Thread
 			
 			// First connection
 			int i = 0;
-
-			while (SERVERNUMNODES>1)
+			while (SERVERNUMNODES>0)
 			{
 				//Listens for a connection to be made to this socket and accepts it
 				//The method blocks until a connection is made
