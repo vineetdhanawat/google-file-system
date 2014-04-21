@@ -46,6 +46,13 @@ public class DaemonThreadClient extends Thread
 				String messageType = tokens[0];
 				
 				System.out.println("Message at "+ServerNode.serverNodeID+": "+messageType);
+				if(messageType.equals("WRITE"))
+				{
+					long currentTS1 = TimeStamp.getTimestamp();
+					PrintWriter writer = new PrintWriter(tokens[1]+"_"+ServerNode.serverNodeID+".txt", "UTF-8");
+					writer.println(tokens[2]+"_"+tokens[3]);
+					writer.close();
+				}
 			}
 			
 		}

@@ -17,6 +17,8 @@ import java.util.TimerTask;
 public class ClientNode 
 {
 	public static ServerSocket server;
+	static String objName="vineet";
+	public static int writeServerID; 
 	
 	// Hashmaps used to store Server sockets, read and write buffers
     public static HashMap<String,Socket> serverSocketMap = new HashMap<String,Socket>();
@@ -72,23 +74,44 @@ public class ClientNode
 					System.out.println("Started thread at "+clientNodeID+" for listening server"+i);
 			}
 			
-			// Initialization Message
-			/*if (nodeID == 0)
+			System.out.print("WRITE STARTING");
+			// Write Objects to Server
+			Thread.sleep(5000);
+
+			
+			try
 			{
-				new Thread()
-				{
-					public void run()
-					{
-						broadcast("START");
-					}
-				 }.start();
-				 RA.requestCriticalSection();
-			}*/
+				writeServerID = getHash(objName);
+				System.out.print("writeServerID:"+writeServerID);
+
+				Socket bs = serverSocketMap.get(String.valueOf(writeServerID));
+				System.out.println("bs:"+bs);
+				PrintWriter writer = serverWriters.get(bs);
+	            writer.println("WRITE,"+objName+",HELLO,1");
+	            writer.flush();
+	            System.out.println("Sending WRITE to server:"+writeServerID);
+			}
+			catch(Exception ex)
+			{
+				ex.printStackTrace();
+			}
+			
+			
 		}
 		catch (Exception e)
 		{
 			//TODO add error handling
 		}
+	}
+	
+	/**
+	 * Takes object name as a string and returns an integer value between 0 to 6
+	 */
+	public static int getHash(String objName){
+		int hash;
+		hash = objName.hashCode() % SERVERNUMNODES;
+		System.out.println("hashcode:"+objName.hashCode());
+		return Math.abs(hash);
 	}
 
 }

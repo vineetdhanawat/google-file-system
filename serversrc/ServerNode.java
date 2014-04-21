@@ -27,6 +27,7 @@ public class ServerNode
     public static HashMap<String,Socket> clientSocketMap = new HashMap<String,Socket>();
     public static HashMap<Socket,BufferedReader> clientReaders = new HashMap<Socket,BufferedReader>();
     public static HashMap<Socket,PrintWriter> clientWriters = new HashMap<Socket,PrintWriter>();
+    
 
 	// Total number of server nodes in the system;
 	public static int SERVERNUMNODES = 0;
@@ -88,16 +89,16 @@ public class ServerNode
 					System.out.println("Started thread at "+serverNodeID+" for listening server"+i);
 				}
 			}
+			Thread.sleep(5000);
 			for (int i=0;i<CLIENTNUMNODES;i++)
 			{
 					DaemonThreadClient DTC = new DaemonThreadClient(clientSocketMap.get(Integer.toString(i)),IOH);
 					System.out.println("SocketID"+DTC);
 					System.out.println("Started thread at "+serverNodeID+" for listening client"+i);
 			}
-			
 			Thread.sleep(5000);
 			
-			// Initialization Message
+			/*// Initialization Message
 			//if (serverNodeID == 0)
 			{
 				new Thread()
@@ -107,7 +108,7 @@ public class ServerNode
 						broadcast("START");
 					}
 				 }.start();
-			}
+			}*/
 
 		}
 		catch (Exception e)
@@ -116,9 +117,17 @@ public class ServerNode
 		}
 	}
 	
+	/**
+	 * Takes object name as a string and returns an integer value between 0 to 6
+	 */
+	public static int getHash(String objName){
+		int hash;
+		hash = objName.hashCode() % SERVERNUMNODES;
+		return hash;
+	}
+	
     /**
-	* Broadcasts a message to all writers in the outputStreams arraylist.
-	* Note this should probably never be used as RicartAgrawala is unicast
+	* Broadcasts a message to all servers and clients in the outputStreams arraylist.
 	*/
 	public static void broadcast(String message)
 	{
