@@ -11,10 +11,11 @@ import java.util.Map;
 
 public class InputOutputHandler
 {
-	public int totalNodes=0;
+	public int totalServerNodes=0, totalClientNodes=0;
 	public Map<String, List<String>> serverMap = new HashMap<String, List<String>>();
+	public Map<String, List<String>> clientMap = new HashMap<String, List<String>>();
 	
-	public int readConfig()
+	public int readServerConfig()
 	{
 		try (BufferedReader br = new BufferedReader(new FileReader("serverconfig.txt")))
 		{
@@ -26,8 +27,8 @@ public class InputOutputHandler
 					String[] tokens = sCurrentLine.split(" ");
 					if(tokens[1].equals("#"))
 					{
-						totalNodes = Integer.parseInt(tokens[0]);
-						System.out.println(totalNodes);
+						totalServerNodes = Integer.parseInt(tokens[0]);
+						System.out.println(totalServerNodes);
 					}
 					else
 					{
@@ -55,7 +56,51 @@ public class InputOutputHandler
 		{
 			e.printStackTrace();
 		}
-		return totalNodes;
+		return totalServerNodes;
+	}
+	
+	public int readClientConfig()
+	{
+		try (BufferedReader br = new BufferedReader(new FileReader("clientconfig.txt")))
+		{
+			String sCurrentLine;
+			while ((sCurrentLine = br.readLine()) != null)
+			{
+				if (!sCurrentLine.startsWith("#"))
+				{
+					String[] tokens = sCurrentLine.split(" ");
+					if(tokens[1].equals("#"))
+					{
+						totalClientNodes = Integer.parseInt(tokens[0]);
+						System.out.println(totalClientNodes);
+					}
+					else
+					{
+						List<String> valueList = new ArrayList<String>();
+						valueList.add(tokens[1]);
+						valueList.add(tokens[2]);
+						serverMap.put(tokens[0], valueList);
+					}
+				}
+			}
+			
+			// Testing the HashMap output
+			for (Map.Entry<String, List<String>> entry : serverMap.entrySet())
+			{
+				String key = entry.getKey();	
+				List<String> values = entry.getValue();							
+				System.out.println("Key = " + key);
+				System.out.println("Values = " + values);
+				// get(o) is host get(1) is port
+				//System.out.println("Values = " + values.get(0));
+				//System.out.println("Values = " + values.get(1));
+			}
+	
+		} catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+		return totalClientNodes;
 	}
 	
 	/*public synchronized void log(long rq, long ts, String status)

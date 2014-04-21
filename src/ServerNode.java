@@ -28,18 +28,20 @@ public class ServerNode
     public static HashMap<Socket,BufferedReader> clientReaders = new HashMap<Socket,BufferedReader>();
     public static HashMap<Socket,PrintWriter> clientWriters = new HashMap<Socket,PrintWriter>();
 
-	// Total number of server nodes in the system; Fixed 5
-	public static int SERVERNUMNODES = 7;
+	// Total number of server nodes in the system;
+	public static int SERVERNUMNODES = 0;
 	
-	// Total number of client nodes in the system; Fixed 5
-	public static int CLIENTNUMNODES = 5;
+	// Total number of client nodes in the system;
+	public static int CLIENTNUMNODES = 0;
 	
 	// ID number of this node instance
 	public static int serverNodeID = 0;
-	
+
+
+
 	public static void main(String[] args)
-	{		
-		
+	{
+
 		// User will let the node know its nodeID
 		if (args.length > 0)
 		{
@@ -55,8 +57,12 @@ public class ServerNode
 		}
 		try 
 		{
+
 			// reading config file
 			InputOutputHandler IOH = new InputOutputHandler();
+			
+			SERVERNUMNODES = IOH.readServerConfig();
+			CLIENTNUMNODES = IOH.readClientConfig();
 			
 			//Must Be Run In A New Thread To Avoid Thread Blocking
 			ReceiveConnectionThread RCT = new ReceiveConnectionThread(serverNodeID,IOH,SERVERNUMNODES,CLIENTNUMNODES);
