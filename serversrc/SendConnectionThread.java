@@ -37,7 +37,7 @@ public class SendConnectionThread extends Thread
 					socket = new Socket(host,port);
 					System.out.println("Connection established");
 					
-					System.out.println("Socket at "+serverNodeID+" for sending to "+i + " "+ socket);
+					System.out.println("Socket at "+serverNodeID+" for sending to server "+i + " "+ socket);
 					System.out.println("-------------------------");
 					
 					ServerNode.serverSocketMap.put(Integer.toString(i),socket);

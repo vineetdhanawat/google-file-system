@@ -79,13 +79,13 @@ public class InputOutputHandler
 						List<String> valueList = new ArrayList<String>();
 						valueList.add(tokens[1]);
 						valueList.add(tokens[2]);
-						serverMap.put(tokens[0], valueList);
+						clientMap.put(tokens[0], valueList);
 					}
 				}
 			}
 			
 			// Testing the HashMap output
-			for (Map.Entry<String, List<String>> entry : serverMap.entrySet())
+			for (Map.Entry<String, List<String>> entry : clientMap.entrySet())
 			{
 				String key = entry.getKey();	
 				List<String> values = entry.getValue();							

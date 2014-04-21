@@ -69,7 +69,7 @@ public class ServerNode
 			System.out.println("Listener Started");
 			
 			// Sleep so that all servers/listeners can can be started
-			Thread.sleep(15000);
+			Thread.sleep(10000);
 			
 			SendConnectionThread SCT = new SendConnectionThread(serverNodeID,IOH,SERVERNUMNODES,CLIENTNUMNODES);
 			

@@ -17,7 +17,9 @@ public class ReceiveConnectionThread extends Thread
 		start();
 		this.serverNodeID = serverNodeID;
 		this.IOH = IOH;
-		this.SERVERNUMNODES = SERVERNUMNODES;
+		// SERVERNUMNODES are expected number of server connections
+		// Which is from all serverNodeID < current server node id
+		this.SERVERNUMNODES = serverNodeID;
 		this.CLIENTNUMNODES = CLIENTNUMNODES;
 
 	}
@@ -39,7 +41,7 @@ public class ReceiveConnectionThread extends Thread
 				//Listens for a connection to be made to this socket and accepts it
 				//The method blocks until a connection is made
 				Socket socket = server.accept();
-				System.out.println("Socket at "+serverNodeID+" for listening "+i + " "+ socket);
+				System.out.println("Socket at "+serverNodeID+" for listening server "+i + " "+ socket);
 				System.out.println("-------------------------");
 				
 				ServerNode.serverSocketMap.put(Integer.toString(i),socket);
@@ -59,7 +61,7 @@ public class ReceiveConnectionThread extends Thread
 				//Listens for a connection to be made to this socket and accepts it
 				//The method blocks until a connection is made
 				Socket socket = server.accept();
-				System.out.println("Socket at "+serverNodeID+" for listening "+i + " "+ socket);
+				System.out.println("Socket at "+serverNodeID+" for listening client "+i + " "+ socket);
 				System.out.println("-------------------------");
 				
 				ServerNode.clientSocketMap.put(Integer.toString(i),socket);
