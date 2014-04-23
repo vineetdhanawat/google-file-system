@@ -87,9 +87,26 @@ public class ClientNode
 				Socket bs = serverSocketMap.get(String.valueOf(writeServerID));
 				System.out.println("bs:"+bs);
 				PrintWriter writer = serverWriters.get(bs);
-	            writer.println("WRITE,"+objName+",HELLO,1");
+	            writer.println("WRITE,"+objName+","+clientNodeID+",HELLO");
 	            writer.flush();
 	            System.out.println("Sending WRITE to server:"+writeServerID);
+	            
+	            Thread.sleep(1000);
+	            
+	            bs = serverSocketMap.get(String.valueOf((writeServerID+1) % SERVERNUMNODES));
+				System.out.println("bs:"+bs);
+				writer = serverWriters.get(bs);
+	            writer.println("REPLICATE,"+objName+","+clientNodeID+",HELLO");
+	            writer.flush();
+	            System.out.println("Sending REPLICATE to server:"+(writeServerID+1) % SERVERNUMNODES);
+	            
+	            bs = serverSocketMap.get(String.valueOf((writeServerID+2) % SERVERNUMNODES));
+				System.out.println("bs:"+bs);
+				writer = serverWriters.get(bs);
+	            writer.println("REPLICATE,"+objName+","+clientNodeID+",HELLO");
+	            writer.flush();
+	            System.out.println("Sending REPLICATE to server:"+(writeServerID+1) % SERVERNUMNODES);
+	            
 			}
 			catch(Exception ex)
 			{

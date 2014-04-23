@@ -28,6 +28,9 @@ public class ServerNode
     public static HashMap<Socket,BufferedReader> clientReaders = new HashMap<Socket,BufferedReader>();
     public static HashMap<Socket,PrintWriter> clientWriters = new HashMap<Socket,PrintWriter>();
     
+    // Public Order
+    public static List<String[]> writeOrder = new ArrayList<String[]>();
+    public static List<String[]> bufferedOrder = new ArrayList<String[]>();
 
 	// Total number of server nodes in the system;
 	public static int SERVERNUMNODES = 0;

@@ -45,7 +45,15 @@ public class DaemonThreadServer extends Thread
 				String tokens[] = message.split(",");
 				String messageType = tokens[0];
 
-				System.out.println("Message at "+ServerNode.serverNodeID+": "+messageType);
+				System.out.println("Message at "+ServerNode.serverNodeID+": "+message);
+				
+				// writer.println("ORDER,"+objName+","+clientNodeID");
+				if(messageType.equals("ORDER"))
+				{
+					String[] writeOrder = {tokens[1],tokens[2]};
+					ServerNode.writeOrder.add(writeOrder);
+					System.out.println("SOP of Order"+ServerNode.writeOrder);
+				}
 			}
 			
 		}
