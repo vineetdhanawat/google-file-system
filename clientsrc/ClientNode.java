@@ -17,7 +17,8 @@ import java.util.TimerTask;
 public class ClientNode 
 {
 	public static ServerSocket server;
-	static String objName="vineet";
+	static String objName1="vineet";
+	static String objName2="vineet";
 	public static int writeServerID; 
 	
 	// Hashmaps used to store Server sockets, read and write buffers
@@ -81,31 +82,26 @@ public class ClientNode
 			
 			try
 			{
-				writeServerID = getHash(objName);
-				System.out.print("writeServerID:"+writeServerID);
-
-				Socket bs = serverSocketMap.get(String.valueOf(writeServerID));
-				System.out.println("bs:"+bs);
-				PrintWriter writer = serverWriters.get(bs);
-	            writer.println("WRITE,"+objName+","+clientNodeID+",HELLO");
-	            writer.flush();
-	            System.out.println("Sending WRITE to server:"+writeServerID);
-	            
-	            Thread.sleep(1000);
-	            
-	            bs = serverSocketMap.get(String.valueOf((writeServerID+1) % SERVERNUMNODES));
-				System.out.println("bs:"+bs);
-				writer = serverWriters.get(bs);
-	            writer.println("REPLICATE,"+objName+","+clientNodeID+",HELLO");
-	            writer.flush();
-	            System.out.println("Sending REPLICATE to server:"+(writeServerID+1) % SERVERNUMNODES);
-	            
-	            bs = serverSocketMap.get(String.valueOf((writeServerID+2) % SERVERNUMNODES));
-				System.out.println("bs:"+bs);
-				writer = serverWriters.get(bs);
-	            writer.println("REPLICATE,"+objName+","+clientNodeID+",HELLO");
-	            writer.flush();
-	            System.out.println("Sending REPLICATE to server:"+(writeServerID+1) % SERVERNUMNODES);
+				if (clientNodeID == 0)
+				{
+					writeServerID = getHash(objName1);
+					System.out.print("writeServerID:"+writeServerID);
+					
+					sendRequest("WRITE",writeServerID,objName1,"Hello");
+		            Thread.sleep(1000);
+		            sendRequest("REPLICATE",(writeServerID+1) % SERVERNUMNODES,objName1,"Hello");
+		            sendRequest("REPLICATE",(writeServerID+2) % SERVERNUMNODES,objName1,"Hello");
+				}
+				if (clientNodeID == 1)
+				{
+					writeServerID = getHash(objName2);
+					System.out.print("writeServerID:"+writeServerID);
+					
+					sendRequest("WRITE",writeServerID,objName2,"HelloMoto");
+		            Thread.sleep(1000);
+		            sendRequest("REPLICATE",(writeServerID+1) % SERVERNUMNODES,objName2,"HelloMoto");
+		            sendRequest("REPLICATE",(writeServerID+2) % SERVERNUMNODES,objName2,"HelloMoto");
+				}
 	            
 			}
 			catch(Exception ex)
@@ -119,6 +115,16 @@ public class ClientNode
 		{
 			//TODO add error handling
 		}
+	}
+	
+	static void sendRequest(String request, int writeServerID, String objName, String message)
+	{
+		Socket bs = serverSocketMap.get(String.valueOf(writeServerID));
+		System.out.println("bs:"+bs);
+		PrintWriter writer = serverWriters.get(bs);
+        writer.println(request+","+objName+","+clientNodeID+","+message);
+        writer.flush();
+        System.out.println("Sending "+request+" to server:"+writeServerID);
 	}
 	
 	/**

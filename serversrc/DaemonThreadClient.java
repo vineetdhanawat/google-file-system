@@ -1,10 +1,12 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Timestamp;
@@ -76,32 +78,26 @@ public class DaemonThreadClient extends Thread
 				if(messageType.equals("REPLICATE"))
 				{
 					// TODO CHECK ORDER
-					Iterator it = ServerNode.writeOrder.iterator();
-					List<String[]> tempOrder = new ArrayList<String[]>();
-					String[] arr = null;
-					while(it.hasNext())
-					{
-						arr = (String[]) it.next();
-						if(arr[0].equalsIgnoreCase(tokens[1]))
-						{
-							tempOrder.add(arr);
-						}
-					}
-					if(tempOrder.get(0)[1].equalsIgnoreCase(tokens[2]))
+					
+
+					if(IsWriteAllowed(message))
 					{
 						System.out.println("HURRAY");
 						// IF TRUE
-						PrintWriter writer = new PrintWriter(tokens[1]+"_"+ServerNode.serverNodeID+".txt", "UTF-8");
-						writer.println(tokens[3]);
-						writer.close();
-						ServerNode.writeOrder.remove(arr);
-						
-						
+						writeObject(message);
+						Iterator<String[]> it = ServerNode.bufferedOrder.iterator();
+						while(it.hasNext()){
+							String[] arr = (String[]) it.next();
+							if(IsWriteAllowed(arr.toString())){
+								writeObject(arr.toString());
+								ServerNode.bufferedOrder.remove(arr);
+							}
+						}
 					}
 					else
 					{
 						// ELSE
-						String[] bufferedOrder = {tokens[1],tokens[2],tokens[3]};
+						String[] bufferedOrder = {tokens[0],tokens[1],tokens[2],tokens[3]};
 						ServerNode.bufferedOrder.add(bufferedOrder);
 						System.out.println("SOP of bufferedOrder"+ServerNode.bufferedOrder);
 					}
@@ -113,6 +109,47 @@ public class DaemonThreadClient extends Thread
 		}
 		catch (Exception e)
 		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	boolean IsWriteAllowed(String message)
+	{
+		String tokens[] = message.split(",");
+
+		Iterator it = ServerNode.writeOrder.iterator();
+		List<String[]> tempOrder = new ArrayList<String[]>();
+		String[] arr = null;
+		while(it.hasNext())
+		{
+			arr = (String[]) it.next();
+			if(arr[0].equalsIgnoreCase(tokens[1]))
+			{
+				tempOrder.add(arr);
+			}
+		}
+		if(tempOrder.get(0)[1].equalsIgnoreCase(tokens[2]))
+		{
+			ServerNode.writeOrder.remove(arr);
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	void writeObject(String message)
+	{
+		String tokens[] = message.split(",");
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter(tokens[1]+"_"+ServerNode.serverNodeID+".txt", "UTF-8");
+			writer.println(tokens[3]);
+			writer.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
