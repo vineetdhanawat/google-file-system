@@ -46,6 +46,21 @@ public class DaemonThreadServer extends Thread
 				String messageType = tokens[0];
 
 				System.out.println("Message at "+ClientNode.clientNodeID+": "+messageType);
+				if(messageType.equals("YES"))
+				{
+					switch(tokens[2])
+					{
+						case "0":
+							ClientNode.isNode0Up = true;
+							break;
+						case "1":
+							ClientNode.isNode1Up = true;
+							break;
+						case "2":
+							ClientNode.isNode2Up = true;
+							break;
+					}
+				}
 			}
 			
 		}

@@ -40,6 +40,7 @@ public class ServerNode
 	
 	// ID number of this node instance
 	public static int serverNodeID = 0;
+	public static boolean isNodeUp;
 
 
 
@@ -52,6 +53,8 @@ public class ServerNode
 			try
 			{
 				serverNodeID = Integer.parseInt(args[0]);
+				isNodeUp = Boolean.valueOf(args[1]);
+				System.out.println("Node status:"+isNodeUp);
 		    }
 			catch (NumberFormatException e)
 			{

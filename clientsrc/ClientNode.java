@@ -19,7 +19,8 @@ public class ClientNode
 	public static ServerSocket server;
 	static String objName1="vineet";
 	static String objName2="vineet";
-	public static int writeServerID; 
+	public static int writeServerID;
+	public static int readServerID;
 	
 	// Hashmaps used to store Server sockets, read and write buffers
     public static HashMap<String,Socket> serverSocketMap = new HashMap<String,Socket>();
@@ -34,6 +35,8 @@ public class ClientNode
 	
 	// ID number of this node instance
 	public static int clientNodeID = 0;
+	public static boolean isNodeUp;
+	public static boolean isNode0Up,isNode1Up,isNode2Up;
 
 	public static void main(String[] args)
 	{
@@ -43,6 +46,8 @@ public class ClientNode
 			try
 			{
 				clientNodeID = Integer.parseInt(args[0]);
+				isNodeUp = Boolean.valueOf(args[1]);
+				System.out.println("Node status:"+isNodeUp);
 		    }
 			catch (NumberFormatException e)
 			{
@@ -87,10 +92,47 @@ public class ClientNode
 					writeServerID = getHash(objName1);
 					System.out.print("writeServerID:"+writeServerID);
 					
-					sendRequest("WRITE",writeServerID,objName1,"Hello");
-		            Thread.sleep(1000);
-		            sendRequest("REPLICATE",(writeServerID+1) % SERVERNUMNODES,objName1,"Hello");
-		            sendRequest("REPLICATE",(writeServerID+2) % SERVERNUMNODES,objName1,"Hello");
+					checkNodeUp(writeServerID);
+					// Check for which nodes are up
+					Thread.sleep(5000);
+					if(isNode0Up && isNode1Up && isNode2Up)
+					{
+						sendRequest("WRITE",writeServerID,objName1,"Hello");
+			            Thread.sleep(1000);
+			            sendRequest("REPLICATE",(writeServerID+1) % SERVERNUMNODES,objName1,"Hello");
+			            sendRequest("REPLICATE",(writeServerID+2) % SERVERNUMNODES,objName1,"Hello");
+					}
+					else if(isNode0Up && isNode1Up)
+					{
+						sendRequest("WRITE",writeServerID,objName1,"Hello");
+			            Thread.sleep(1000);
+			            sendRequest("REPLICATE",(writeServerID+1) % SERVERNUMNODES,objName1,"Hello");
+					}
+					else if(isNode1Up && isNode2Up)
+					{
+						sendRequest("WRITE",(writeServerID+1) % SERVERNUMNODES,objName1,"Hello");
+			            Thread.sleep(1000);
+			            sendRequest("REPLICATE",(writeServerID+2) % SERVERNUMNODES,objName1,"Hello");
+					}
+					else if(isNode0Up && isNode2Up)
+					{
+						sendRequest("WRITE",writeServerID,objName1,"Hello");
+			            Thread.sleep(1000);
+			            sendRequest("REPLICATE",(writeServerID+2) % SERVERNUMNODES,objName1,"Hello");
+					}
+					isNode0Up = false;
+					isNode1Up = false;
+					isNode2Up = false;
+					
+					System.out.println("Reading object now");
+					Thread.sleep(1000);
+
+					readServerID = getHash(objName1);
+					System.out.print("readServerID:"+readServerID);
+
+					checkNodeUp(readServerID);
+					
+					
 				}
 				if (clientNodeID == 1)
 				{
@@ -102,6 +144,9 @@ public class ClientNode
 		            sendRequest("REPLICATE",(writeServerID+1) % SERVERNUMNODES,objName2,"HelloMoto");
 		            sendRequest("REPLICATE",(writeServerID+2) % SERVERNUMNODES,objName2,"HelloMoto");
 				}
+				
+				//writeServerID = getHash(objName1);
+
 	            
 			}
 			catch(Exception ex)
@@ -125,6 +170,30 @@ public class ClientNode
         writer.println(request+","+objName+","+clientNodeID+","+message);
         writer.flush();
         System.out.println("Sending "+request+" to server:"+writeServerID);
+	}
+	
+	static void checkNodeUp(int writeServerID)
+	{
+		Socket bs = serverSocketMap.get(String.valueOf(writeServerID));
+		System.out.println("bs:"+bs);
+		PrintWriter writer = serverWriters.get(bs);
+        writer.println("PING,"+clientNodeID+","+"0");
+        writer.flush();
+        System.out.println("Sending PING to server:"+writeServerID+","+"0");
+        
+        bs = serverSocketMap.get(String.valueOf((writeServerID+1)%SERVERNUMNODES));
+		System.out.println("bs:"+bs);
+		writer = serverWriters.get(bs);
+        writer.println("PING,"+clientNodeID+","+"1");
+        writer.flush();
+        System.out.println("Sending PING to server:"+(writeServerID+1)%SERVERNUMNODES+","+"1");
+        
+        bs = serverSocketMap.get(String.valueOf((writeServerID+2)%SERVERNUMNODES));
+		System.out.println("bs:"+bs);
+		writer = serverWriters.get(bs);
+        writer.println("PING,"+clientNodeID+","+"2");
+        writer.flush();
+        System.out.println("Sending PING to server:"+(writeServerID+2)%SERVERNUMNODES+","+"2");
 	}
 	
 	/**

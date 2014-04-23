@@ -104,6 +104,19 @@ public class DaemonThreadClient extends Thread
 					
 
 				}
+				
+				if(messageType.equals("PING"))
+				{
+					if(ServerNode.isNodeUp)
+					{
+						Socket bs = ServerNode.serverSocketMap.get(tokens[1]);
+						System.out.println("bs:"+bs);
+						PrintWriter writer = ServerNode.serverWriters.get(bs);
+			            writer.println("YES,"+ServerNode.serverNodeID+","+tokens[2]);
+			            writer.flush();
+			            System.out.println("Sending PING REPLY YES to client:"+tokens[1]);
+					}
+				}
 			}
 			
 		}
