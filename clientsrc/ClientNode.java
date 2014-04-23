@@ -92,7 +92,10 @@ public class ClientNode
 					writeServerID = getHash(objName1);
 					System.out.print("writeServerID:"+writeServerID);
 					
-					checkNodeUp(writeServerID);
+					checkNodeUp(writeServerID,"0");
+					checkNodeUp((writeServerID+1)%SERVERNUMNODES,"1");
+					checkNodeUp((writeServerID+2)%SERVERNUMNODES,"2");
+
 					// Check for which nodes are up
 					Thread.sleep(5000);
 					if(isNode0Up && isNode1Up && isNode2Up)
@@ -130,7 +133,7 @@ public class ClientNode
 					readServerID = getHash(objName1);
 					System.out.print("readServerID:"+readServerID);
 
-					checkNodeUp(readServerID);
+					// READ CODE
 					
 					
 				}
@@ -172,28 +175,14 @@ public class ClientNode
         System.out.println("Sending "+request+" to server:"+writeServerID);
 	}
 	
-	static void checkNodeUp(int writeServerID)
+	static void checkNodeUp(int writeServerID, String order)
 	{
 		Socket bs = serverSocketMap.get(String.valueOf(writeServerID));
 		System.out.println("bs:"+bs);
 		PrintWriter writer = serverWriters.get(bs);
         writer.println("PING,"+clientNodeID+","+"0");
         writer.flush();
-        System.out.println("Sending PING to server:"+writeServerID+","+"0");
-        
-        bs = serverSocketMap.get(String.valueOf((writeServerID+1)%SERVERNUMNODES));
-		System.out.println("bs:"+bs);
-		writer = serverWriters.get(bs);
-        writer.println("PING,"+clientNodeID+","+"1");
-        writer.flush();
-        System.out.println("Sending PING to server:"+(writeServerID+1)%SERVERNUMNODES+","+"1");
-        
-        bs = serverSocketMap.get(String.valueOf((writeServerID+2)%SERVERNUMNODES));
-		System.out.println("bs:"+bs);
-		writer = serverWriters.get(bs);
-        writer.println("PING,"+clientNodeID+","+"2");
-        writer.flush();
-        System.out.println("Sending PING to server:"+(writeServerID+2)%SERVERNUMNODES+","+"2");
+        System.out.println("Sending PING to server:"+writeServerID+","+order);
 	}
 	
 	/**
