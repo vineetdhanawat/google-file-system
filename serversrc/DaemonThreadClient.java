@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -50,6 +51,21 @@ public class DaemonThreadClient extends Thread
 				String messageType = tokens[0];
 				
 				System.out.println("Message at "+ServerNode.serverNodeID+": "+message);
+				
+				// writer.println("READ,"+objName+","+clientNodeID);
+				if(messageType.equals("READ"))
+				{
+					BufferedReader reader = new BufferedReader(new FileReader(tokens[1]+"_"+ServerNode.serverNodeID+".txt"));
+					String line = reader.readLine();
+					
+					Socket bs = ServerNode.serverSocketMap.get(tokens[2]);
+					System.out.println("bs:"+bs);
+					PrintWriter writer = ServerNode.serverWriters.get(bs);
+		            writer.println("DATA,"+ServerNode.serverNodeID+","+line);
+		            writer.flush();
+		            System.out.println("Sending READ REPLY to client:"+tokens[2]);
+					
+				}
 				if(messageType.equals("WRITE"))
 				{
 					PrintWriter writer = new PrintWriter(tokens[1]+"_"+ServerNode.serverNodeID+".txt", "UTF-8");
@@ -109,9 +125,9 @@ public class DaemonThreadClient extends Thread
 				{
 					if(ServerNode.isNodeUp)
 					{
-						Socket bs = ServerNode.serverSocketMap.get(tokens[1]);
+						Socket bs = ServerNode.clientSocketMap.get(tokens[1]);
 						System.out.println("bs:"+bs);
-						PrintWriter writer = ServerNode.serverWriters.get(bs);
+						PrintWriter writer = ServerNode.clientWriters.get(bs);
 			            writer.println("YES,"+ServerNode.serverNodeID+","+tokens[2]);
 			            writer.flush();
 			            System.out.println("Sending PING REPLY YES to client:"+tokens[1]);

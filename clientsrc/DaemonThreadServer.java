@@ -45,7 +45,7 @@ public class DaemonThreadServer extends Thread
 				String tokens[] = message.split(",");
 				String messageType = tokens[0];
 
-				System.out.println("Message at "+ClientNode.clientNodeID+": "+messageType);
+				System.out.println("Message at "+ClientNode.clientNodeID+": "+message);
 				if(messageType.equals("YES"))
 				{
 					switch(tokens[2])
@@ -60,6 +60,12 @@ public class DaemonThreadServer extends Thread
 							ClientNode.isNode2Up = true;
 							break;
 					}
+				}
+				
+				if(messageType.equals("DATA"))
+				{
+					//writer.println("DATA,"+ServerNode.serverNodeID+","+line);
+					System.out.println("DATA READ:"+tokens[2]);
 				}
 			}
 			

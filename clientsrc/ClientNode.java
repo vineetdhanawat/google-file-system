@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.TimerTask;
 
 public class ClientNode 
@@ -97,9 +98,13 @@ public class ClientNode
 					checkNodeUp((writeServerID+2)%SERVERNUMNODES,"2");
 
 					// Check for which nodes are up
-					Thread.sleep(5000);
+					Thread.sleep(10000);
+					System.out.println("isNode0Up:"+isNode0Up);
+					System.out.println("isNode1Up:"+isNode1Up);
+					System.out.println("isNode2Up:"+isNode2Up);
 					if(isNode0Up && isNode1Up && isNode2Up)
 					{
+						System.out.println("Sending WRITE to nodes");
 						sendRequest("WRITE",writeServerID,objName1,"Hello");
 			            Thread.sleep(1000);
 			            sendRequest("REPLICATE",(writeServerID+1) % SERVERNUMNODES,objName1,"Hello");
@@ -134,6 +139,12 @@ public class ClientNode
 					System.out.print("readServerID:"+readServerID);
 
 					// READ CODE
+					checkNodeUp(readServerID,"0");
+					checkNodeUp((readServerID+1)%SERVERNUMNODES,"1");
+					checkNodeUp((readServerID+2)%SERVERNUMNODES,"2");
+					// TODO: Logic for choosing read node
+					readServerID += getReadServer(isNode0Up,isNode1Up,isNode2Up);
+					readRequest(readServerID%SERVERNUMNODES,objName1);
 					
 					
 				}
@@ -165,6 +176,33 @@ public class ClientNode
 		}
 	}
 	
+	public static int getReadServer(boolean b1, boolean b2, boolean b3)
+	{
+		int ret = -1;
+		Random r = new Random();
+		if(b1 && b2 && b3){
+			ret = r.nextInt(3);
+		}
+		else if(b1 && b2 && !b3){
+			ret = r.nextInt(2);
+		}
+		else if(b1 && !b2 && b3){
+			ret = r.nextInt(2);
+			if(ret==1)
+				ret =  ret+1;
+		}
+		else if (!b1 && b2 && b3){
+			ret = r.nextInt(2)+1;
+		}
+		else if(b1){
+			ret = 0;
+		}else if(b2){
+			ret = 1;
+		}else if (b3){
+			ret = 2;
+		}
+		return ret;
+	}
 	static void sendRequest(String request, int writeServerID, String objName, String message)
 	{
 		Socket bs = serverSocketMap.get(String.valueOf(writeServerID));
@@ -175,12 +213,22 @@ public class ClientNode
         System.out.println("Sending "+request+" to server:"+writeServerID);
 	}
 	
+	static void readRequest(int readServerID, String objName)
+	{
+		Socket bs = serverSocketMap.get(String.valueOf(readServerID));
+		System.out.println("bs:"+bs);
+		PrintWriter writer = serverWriters.get(bs);
+        writer.println("READ,"+objName+","+clientNodeID);
+        writer.flush();
+        System.out.println("Sending READ to server:"+readServerID);
+	}
+	
 	static void checkNodeUp(int writeServerID, String order)
 	{
 		Socket bs = serverSocketMap.get(String.valueOf(writeServerID));
 		System.out.println("bs:"+bs);
 		PrintWriter writer = serverWriters.get(bs);
-        writer.println("PING,"+clientNodeID+","+"0");
+        writer.println("PING,"+clientNodeID+","+order);
         writer.flush();
         System.out.println("Sending PING to server:"+writeServerID+","+order);
 	}
