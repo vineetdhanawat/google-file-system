@@ -228,9 +228,9 @@ public class ClientNode
 		Socket bs = serverSocketMap.get(String.valueOf(writeServerID));
 		System.out.println("bs:"+bs);
 		PrintWriter writer = serverWriters.get(bs);
-        writer.println("PING,"+clientNodeID+","+order);
+        writer.println("PING,"+clientNodeID+","+order+","+isNodeUp);
         writer.flush();
-        System.out.println("Sending PING to server:"+writeServerID+","+order);
+        System.out.println("Sending PING to server:"+writeServerID+","+order+","+isNodeUp);
 	}
 	
 	/**

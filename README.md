@@ -12,8 +12,7 @@ Demo of file replication. Coursework CS 6378
  - Client should be able to randomly choose any of the three replicas of an object when it wishes to read the value of the object
  - Client can do update/insert only if two or more servers are available out of the chosen three.
  - Client should abort update/insert in case just one node is available.
- - In case of two or more clients trying to update same object. Updates must be performed in the same order in all servers.
-5. Few of the nodes in the system can be down or out of reach at times. Such a scenario can be simulated by logical partitioning of nodes into two set of nodes. Nodes in 'up' set of nodes can respond while nodes in the 'down' set of nodes will not respond to requests.
+ - In case of two or more clients trying to update same object. Updates must be performed in the same order in all servers. Set of nodes can only respond to same type and not to other.
 
 ## Sample Config File
 	# Any text following '#' should be ignored

@@ -123,7 +123,8 @@ public class DaemonThreadClient extends Thread
 				
 				if(messageType.equals("PING"))
 				{
-					if(ServerNode.isNodeUp)
+					// writer.println("PING,"+clientNodeID+","+order+","+isNodeUp);
+					if(ServerNode.isNodeUp == Boolean.valueOf(tokens[3]))
 					{
 						Socket bs = ServerNode.clientSocketMap.get(tokens[1]);
 						System.out.println("bs:"+bs);
