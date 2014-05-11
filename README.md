@@ -23,12 +23,12 @@ Demo of file replication. Coursework CS 6378
 	2 127.0.0.1 52000 # Location of node 2
 
 ## Usage
-	$ java -jar servernode 0
-	$ java -jar servernode 1
-	$ java -jar servernode <n>
-	$ java -jar clientnode 0
-	$ java -jar clientnode 1
-	$ java -jar clientnode <n>
+	$ java -jar servernode 0 true
+	$ java -jar servernode 1 false
+	$ java -jar servernode <n> true
+	$ java -jar clientnode 0 true
+	$ java -jar clientnode 1 false
+	$ java -jar clientnode <n> true
 
 - Export a runnable jar file using eclipse.
 - Place config.txt and ricartagrawala.jar in same folder on all the nodes.
